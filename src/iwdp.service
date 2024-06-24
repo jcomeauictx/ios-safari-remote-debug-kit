@@ -1,0 +1,12 @@
+[Unit]
+Description=iOS Webkit Debug Proxy
+
+[Service]
+ExecStart=ios_webkit_debug_proxy --no-frontend
+Restart=always
+RestartSec=60
+Wants=network-online.target
+After=network-online.target
+
+[Install]
+WantedBy=default.target
