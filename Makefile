@@ -3,9 +3,9 @@ DEBUG_PROXY_EXE ?= ios_webkit_debug_proxy
 PHONE ?= IPHONE7
 IPHONE6 := iphone6
 IPHONE6_IOS ?= 13.0
-# iphone 7 has 15.8.2
+# iphone 7 has 15.8.2, closest options are 15.4 and 16
 IPHONE7 := iphone7
-IPHONE7_IOS ?= 16.0
+IPHONE7_IOS ?= 15.4
 DEBUGGER ?= http://localhost:8080/Main.html?ws=localhost:9222/devtools/page/1
 PAUSE ?= false
 export DEBUGGER
@@ -20,7 +20,9 @@ iphone6 iphone7: src
 stop:
 	pid=$$(lsof -t -itcp@localhost:8080 -s tcp:listen); \
         if [ "$$pid" ]; then \
+	 echo Stopping server on localhost:8080 >&2; \
          kill $$pid; \
+	 sleep 1; \
         else \
          echo Nothing to stop: server has not been running >&2; \
         fi
