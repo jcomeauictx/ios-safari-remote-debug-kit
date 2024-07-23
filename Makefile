@@ -1,9 +1,11 @@
 DEBUG_PROXY_EXE ?= ios_webkit_debug_proxy
 
+all: iphone6.run
+%.run: %
+	cd $< && $(MAKE)
 iphone6: src
-	cd $< && $(MAKE) clean
-	cd $< && $(MAKE) WebKit
-	mv $</WebKit $@
+	rm -rf $@
+	cp -r src $@
 
 define ORIGINAL
 #!/usr/bin/env bash
