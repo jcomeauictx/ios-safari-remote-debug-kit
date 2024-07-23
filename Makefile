@@ -1,11 +1,15 @@
 DEBUG_PROXY_EXE ?= ios_webkit_debug_proxy
+# iphone 6 has 12.5.7, closest options are 12.2 and 13.0
+IPHONE6_IOS ?= 13.0
 
 all: iphone6.run
 %.run: %
-	cd $< && $(MAKE)
+	cd $< && $(MAKE) IOS_VERSION=$(IPHONE6_IOS)
 iphone6: src
 	rm -rf $@
 	cp -r src $@
+clean:
+	rm -rf iphone6
 
 define ORIGINAL
 #!/usr/bin/env bash

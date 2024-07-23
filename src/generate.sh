@@ -4,7 +4,7 @@ set -euo pipefail
 
 DO_PAUSE="true"
 DO_FETCH="null"
-IOS_VERSION=""
+IOS_VERSION=${IOS_VERSION:-}
 
 while getopts ":pfni:" CURRENT_OPT; do
   case "${CURRENT_OPT}" in
