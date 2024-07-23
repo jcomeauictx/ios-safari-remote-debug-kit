@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-DO_PAUSE="true"
+DO_PAUSE=${DO_PAUSE:-true}
 DO_FETCH="null"
 IOS_VERSION=${IOS_VERSION:-}
 
