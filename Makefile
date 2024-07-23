@@ -6,7 +6,9 @@ PAUSE ?= false
 export DEBUGGER
 all: iphone6.run
 iphone6.run: iphone6
-	cd $< && $(MAKE) IOS_VERSION=$(IPHONE6_IOS) DO_PAUSE=$(PAUSE)
+	$(MAKE) stop
+	-cd $< && $(MAKE) IOS_VERSION=$(IPHONE6_IOS) DO_PAUSE=$(PAUSE)
+	$(MAKE) stop
 iphone6: src
 	rm -rf $@
 	cp -r src $@
