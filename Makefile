@@ -1,15 +1,20 @@
 DEBUG_PROXY_EXE ?= ios_webkit_debug_proxy
 # iphone 6 has 12.5.7, closest options are 12.2 and 13.0
+PHONE ?= IPHONE7
+IPHONE6 := iphone6
 IPHONE6_IOS ?= 13.0
+# iphone 7 has 15.8.2
+IPHONE7 := iphone7
+IPHONE7_IOS ?= 16.0
 DEBUGGER ?= http://localhost:8080/Main.html?ws=localhost:9222/devtools/page/1
 PAUSE ?= false
 export DEBUGGER
-all: iphone6.run
-iphone6.run: iphone6
+all: $($(PHONE)).run
+%.run: %
 	$(MAKE) stop
-	-cd $< && $(MAKE) IOS_VERSION=$(IPHONE6_IOS) DO_PAUSE=$(PAUSE)
+	-cd $< && $(MAKE) IOS_VERSION=$($(PHONE)_IOS) DO_PAUSE=$(PAUSE)
 	$(MAKE) stop
-iphone6: src
+iphone6 iphone7: src
 	rm -rf $@
 	cp -r src $@
 stop:
