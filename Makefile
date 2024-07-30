@@ -12,20 +12,28 @@ export DEBUGGER
 all: $($(PHONE)).run
 %.run: %
 	$(MAKE) stop
-	-cd $< && $(MAKE) IOS_VERSION=$($(PHONE)_IOS) DO_PAUSE=$(PAUSE)
+	$(MAKE) -C $< IOS_VERSION=$($(PHONE)_IOS) DO_PAUSE=$(PAUSE)
 	$(MAKE) stop
 iphone6 iphone7: src
 	rm -rf $@
 	cp -r src $@
 stop:
-	pid=$$(lsof -t -itcp@localhost:8080 -s tcp:listen); \
-        if [ "$$pid" ]; then \
+	httppid=$$(lsof -t -itcp@localhost:8080 -s tcp:listen); \
+	wspid=$$(lsof -t -itcp@localhost:9222 -s tcp:listen); \
+	if [ "$$httppid" ]; then \
 	 echo Stopping server on localhost:8080 >&2; \
-         kill $$pid; \
+	 kill $$httppid; \
 	 sleep 1; \
-        else \
-         echo Nothing to stop: server has not been running >&2; \
-        fi
+	else \
+	 echo Nothing to stop: http server has not been running >&2; \
+	fi
+	if [ "$$wspid" ]; then \
+	 echo Stopping server on localhost:9222 >&2; \
+	 kill $$wspid; \
+	 sleep 1; \
+	else \
+	 echo Nothing to stop: websocket server has not been running >&2; \
+	fi
 clean: stop
 	rm -rf iphone6
 
