@@ -19,7 +19,6 @@ iphone6 iphone7: src
 	cp -r src $@
 stop:
 	httppid=$$(lsof -t -itcp@localhost:8080 -s tcp:listen); \
-	wspid=$$(lsof -t -itcp@localhost:9222 -s tcp:listen); \
 	if [ "$$httppid" ]; then \
 	 echo Stopping server on localhost:8080 >&2; \
 	 kill $$httppid; \
@@ -27,12 +26,21 @@ stop:
 	else \
 	 echo Nothing to stop: http server has not been running >&2; \
 	fi
+	wspid=$$(lsof -t -itcp@localhost:9222 -s tcp:listen); \
 	if [ "$$wspid" ]; then \
 	 echo Stopping server on localhost:9222 >&2; \
 	 kill $$wspid; \
 	 sleep 1; \
 	else \
 	 echo Nothing to stop: websocket server has not been running >&2; \
+	fi
+	iwdppid=$$(lsof -t -itcp:9221 -s tcp:listen); \
+	if [ "$$iwdppid" ]; then \
+	 echo Stopping server on localhost:9221 >&2; \
+	 kill $$iwdppid; \
+	 sleep 1; \
+	else \
+	 echo Nothing to stop: IWDP server has not been running >&2; \
 	fi
 clean: stop
 	rm -rf iphone6
