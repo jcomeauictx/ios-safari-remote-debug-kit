@@ -14,7 +14,7 @@ NEW_DEBUGGER := $(BESTIES)/ios-safari-remote-debug/ios-safari-remote-debug
 NEW_DEBUGGER_DIR := $(dir $(NEW_DEBUGGER))
 NEW_SERVER := $(notdir $(NEW_DEBUGGER))
 USR_SRC ?= $(dir $(BESTIES))
-CHROME ?= $(which chromium chrome xdg-open 2>/dev/null | head -n 1)
+CHROME ?= $(shell which chromium chrome xdg-open 2>/dev/null | head -n 1)
 ifeq ($(SHOWENV),)
 export DEBUGGER
 else
