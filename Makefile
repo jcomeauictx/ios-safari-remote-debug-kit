@@ -9,7 +9,17 @@ IPHONE7 := iphone7
 IPHONE7_IOS ?= 15.4
 DEBUGGER ?= http://localhost:8080/Main.html?ws=localhost:9222/devtools/page/1
 PAUSE ?= false
+BESTIES ?= ../../besties
+NEW_DEBUGGER := $(BESTIES)/ios-safari-remote-debug/ios-safari-remote-debug
+NEW_DEBUGGER_DIR := $(dir $(NEW_DEBUGGER))
+NEW_SERVER := $(notdir $(NEW_DEBUGGER))
+USR_SRC ?= $(dir $(BESTIES))
+CHROME ?= $(which chromium chrome xdg-open 2>/dev/null | head -n 1)
+ifeq ($(SHOWENV),)
 export DEBUGGER
+else
+export
+endif
 all: $($(PHONE)).run
 %.run: %
 	$(MAKE) stop
@@ -58,23 +68,41 @@ proxy.stop:
 	fi
 	 
 # more modern golang program referenced in README
-besties: ios-safari-remote-debug/dist/debug/index.html
-%/dist/debug/index.html: %/ios-safari-remote-debug
+besties: $(NEW_DEBUGGER_DIR)/dist/debug/index.html
+$(NEW_DEBUGGER_DIR)/dist/debug/index.html: $(NEW_DEBUGGER)
 	cd $(<D) && ./$(<F) build
-ios-safari-remote-debug/ios-safari-remote-debug: ios-safari-remote-debug
-	cd $< && go build
-ios-safari-remote-debug:
-	git clone https://git.gay/besties/$@
-newserver: ios-safari-remote-debug/dist/debug/index.html proxy
-	cd $(<D)/../.. && exec -a isrd ./ios-safari-remote-debug serve &
-	chromium http://127.0.0.1:8924/
+$(NEW_DEBUGGER): $(NEW_DEBUGGER_DIR)/.git
+	cd $(<D) && go build
+$(NEW_DEBUGGER_DIR)/.git: $(BESTIES)
+	cd $< && git clone https://git.gay/besties/$(NEW_SERVER)
+$(BESTIES): $(USR_SRC)
+	if [ -w "$<" ]; then \
+	 mkdir -p $@; \
+	else \
+	 echo cannot create directory $@ >&2; \
+	 echo 'try with `sudo` or `make BESTIES=. $(NEW_DEBUGGER)`' >&2; \
+	 false; \
+	fi
+newserver: $(NEW_DEBUGGER_DIR)/dist/debug/index.html proxy
+	if [ -z "$(CHROME)" ]; then \
+	 echo cannot find chrome or similar browser >&2; \
+	 false; \
+	fi
+	cd $(NEW_DEBUGGER_DIR) && exec -a isrd ./$(NEW_SERVER) serve &
+	$(CHROME) http://127.0.0.1:8924/
 	read -p '<ENTER> when done: '
 	$(MAKE) newserver.stop
 newserver.stop: proxy.stop
 	if [ "$$(pidof isrd)" ]; then \
-	 echo killing ios-safari-remote-debug >&2; \
+	 echo killing $(NEW_SERVER) >&2; \
 	 kill $$(pidof isrd); \
 	else \
-	 echo ios-safari-remote-debug is not running >&2; \
+	 echo $(NEW_SERVER) is not running >&2; \
 	fi
+env:
+ifeq ($(SHOWENV),)
+	make SHOWENV=1 $@
+else
+	env
+endif
 .FORCE:
