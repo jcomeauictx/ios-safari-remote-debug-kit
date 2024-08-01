@@ -6,7 +6,7 @@ IPHONE6 := iphone6
 IPHONE6_IOS ?= 13.0
 # iphone 7 has 15.8.2, closest options are 15.4 and 16.0
 IPHONE7 := iphone7
-IPHONE7_IOS ?= 16.0
+IPHONE7_IOS ?= 15.4
 DEBUGGER ?= http://localhost:8080/Main.html?ws=localhost:9222/devtools/page/1
 PAUSE ?= false
 export DEBUGGER
@@ -18,7 +18,7 @@ all: $($(PHONE)).run
 iphone6 iphone7: src .FORCE
 	rm -rf $@
 	cp -r src $@
-stop:
+stop: proxy.stop
 	httppid=$$(lsof -t -itcp@localhost:8080 -s tcp:listen); \
 	if [ "$$httppid" ]; then \
 	 echo Stopping server on localhost:8080 >&2; \
@@ -45,6 +45,18 @@ stop:
 	fi
 clean: stop
 	rm -rf iphone6 iphone7
+proxy:
+	if [ -z "$$(lsof -t -itcp:9221 -s tcp:listen)" ]; then \
+	 exec -a iwdp $(DEBUG_PROXY_EXE) & \
+	fi
+proxy.stop:
+	if [ "$$(pidof iwdp)" ]; then \
+	 echo stopping $(DEBUG_PROXY_EXE) >&2; \
+	 kill $$(pidof iwdp); \
+	else \
+	 echo $(DEBUG_PROXY_EXE) is not running >&2; \
+	fi
+	 
 # more modern golang program referenced in README
 besties: ios-safari-remote-debug/dist/debug/index.html
 %/dist/debug/index.html: %/ios-safari-remote-debug
@@ -53,12 +65,12 @@ ios-safari-remote-debug/ios-safari-remote-debug: ios-safari-remote-debug
 	cd $< && go build
 ios-safari-remote-debug:
 	git clone https://git.gay/besties/$@
-newserver: ios-safari-remote-debug/dist/debug/index.html
+newserver: ios-safari-remote-debug/dist/debug/index.html proxy
 	cd $(<D)/../.. && exec -a isrd ./ios-safari-remote-debug serve &
 	chromium http://127.0.0.1:8924/
 	read -p '<ENTER> when done: '
 	$(MAKE) newserver.stop
-newserver.stop:
+newserver.stop: proxy.stop
 	if [ "$$(pidof isrd)" ]; then \
 	 echo killing ios-safari-remote-debug >&2; \
 	 kill $$(pidof isrd); \
