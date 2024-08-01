@@ -44,4 +44,14 @@ stop:
 	fi
 clean: stop
 	rm -rf iphone6 iphone7
+# more modern golang program referenced in README
+besties: ios-safari-remote-debug/dist/debug/index.html
+%/dist/debug/index.html: %/%
+	cd $(<D) && $(<F) build
+ios-safari-remote-debug/ios-safari-remote-debug: ios-safari-remote-debug
+	cd $< && go build
+ios-safari-remote-debug:
+	git clone https://git.gay/besties/$@
+newserver: ios-safari-remote-debug/dist/debug/index.html
+	cd $(<D)/../.. && ./ios-safari-remote-debug serve
 .FORCE:
