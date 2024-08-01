@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 DEBUG_PROXY_EXE ?= ios_webkit_debug_proxy
 # iphone 6 has 12.5.7, closest options are 12.2 and 13.0
 PHONE ?= IPHONE7
@@ -53,5 +54,15 @@ ios-safari-remote-debug/ios-safari-remote-debug: ios-safari-remote-debug
 ios-safari-remote-debug:
 	git clone https://git.gay/besties/$@
 newserver: ios-safari-remote-debug/dist/debug/index.html
-	cd $(<D)/../.. && ./ios-safari-remote-debug serve
+	cd $(<D)/../.. && exec -a isrd ./ios-safari-remote-debug serve &
+	chromium http://127.0.0.1:8924/
+	read -p '<ENTER> when done: '
+	$(MAKE) newserver.stop
+newserver.stop:
+	if [ "$$(pidof isrd)" ]; then \
+	 echo killing ios-safari-remote-debug >&2; \
+	 kill $$(pidof isrd); \
+	else \
+	 echo ios-safari-remote-debug is not running >&2; \
+	fi
 .FORCE:
