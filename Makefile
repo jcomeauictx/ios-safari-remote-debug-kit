@@ -1,4 +1,6 @@
 SHELL := /bin/bash
+OWNER_SRC := $(dir $(PWD))
+OWNER := $(notdir $(OWNER_SRC:/=))
 DEBUG_PROXY_EXE ?= ios_webkit_debug_proxy
 # iphone 6 has 12.5.7, closest options are 12.2 and 13.0
 PHONE ?= IPHONE7
@@ -15,6 +17,7 @@ NEW_DEBUGGER := $(BESTIES)/ios-safari-remote-debug/ios-safari-remote-debug
 NEW_DEBUGGER_DIR := $(dir $(NEW_DEBUGGER))
 NEW_SERVER := $(notdir $(NEW_DEBUGGER))
 USR_SRC ?= $(dir $(BESTIES))
+WEBKIT := $(OWNER_SRC:/=)/WebKit
 CHROME ?= $(shell which chromium chrome xdg-open 2>/dev/null | head -n 1)
 ifeq ($(SHOWENV),)
 export DEBUGGER
@@ -105,4 +108,9 @@ ifeq ($(SHOWENV),)
 else
 	env
 endif
+$(WEBKIT): Makefile  # rebuild when Makefile modified
+	rm -rf $@
+	cd $(OWNER_SRC) && git clone --depth 1 --filter="blob:none" \
+	 --sparse "https://github.com/WebKit/WebKit"
+	cd $@ && git sparse-checkout set Source/WebInspectorUI/UserInterface
 .FORCE:
