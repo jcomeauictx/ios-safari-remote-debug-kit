@@ -108,9 +108,8 @@ ifeq ($(SHOWENV),)
 else
 	env
 endif
-$(WEBKIT): Makefile  # rebuild when Makefile modified
-	rm -rf $@
+$(WEBKIT):
 	cd $(OWNER_SRC) && git clone --depth 1 --filter="blob:none" \
-	 --sparse "https://github.com/WebKit/WebKit"
+	 --sparse "git@github.com:$(OWNER)/WebKit"
 	cd $@ && git sparse-checkout set Source/WebInspectorUI/UserInterface
 .FORCE:
