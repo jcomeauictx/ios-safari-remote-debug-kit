@@ -25,8 +25,7 @@ all: $($(PHONE)).run
 	$(MAKE) stop
 	$(MAKE) -C $< IOS_VERSION=$($(PHONE)_IOS) DO_PAUSE=$(PAUSE)
 	$(MAKE) stop
-iphone6 iphone7: src .FORCE
-	rm -rf $@
+iphone6 iphone7: src
 	cp -r src $@
 stop: proxy.stop
 	httppid=$$(lsof -t -itcp@localhost:8080 -s tcp:listen); \
