@@ -5,6 +5,9 @@ set -euo pipefail
 DO_PAUSE=${DO_PAUSE:-true}
 DO_FETCH="null"
 IOS_VERSION=${IOS_VERSION:-}
+SRC=$(readlink -f ../..)
+echo Repository sources at $SRC >&2
+echo Current directory at $PWD >&2
 
 while getopts ":pfni:" CURRENT_OPT; do
   case "${CURRENT_OPT}" in
