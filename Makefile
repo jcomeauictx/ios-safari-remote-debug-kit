@@ -5,8 +5,9 @@ PHONE ?= IPHONE7
 IPHONE6 := iphone6
 IPHONE6_IOS ?= 13.0
 # iphone 7 has 15.8.2, closest options are 15.4 and 16.0
+# 15.4 gives "undefined Float16Array error" but not every time (?)
 IPHONE7 := iphone7
-IPHONE7_IOS ?= 15.4
+IPHONE7_IOS ?= 16.0
 DEBUGGER ?= http://localhost:8080/Main.html?ws=localhost:9222/devtools/page/1
 PAUSE ?= false
 BESTIES ?= ../../besties
