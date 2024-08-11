@@ -27,9 +27,14 @@ USR_SRC ?= $(dir $(BESTIES))
 WEBKIT := $(OWNER_SRC:/=)/WebKit
 UI_MAIN := Source/WebInspectorUI/UserInterface/Main.html
 UI_DIR := $(dir $(UI_MAIN))
+PROTOCOL := $(UI_DIR:/=)/Protocol
+# use deferred evaluation on anything with VERSION
+VERSION = $($(PHONE)_IOS)
+BACKEND = $(PROTOCOL)/Legacy/iOS/$(VERSION)/InspectorBackendCommands.js
 UI := $(dir $(UI_DIR:/=))
 WEBKIT_UI := $(WEBKIT)/$(UI_MAIN)
-CHROME ?= $(shell which chromium chrome xdg-open 2>/dev/null | head -n 1)
+CHROME ?= $(shell which chromium chrome xdg-open false | head -n 1)
+DEBUG_PROXY_EXE ?= $(shell which ios-webkit-debug-proxy false | head -n 1)
 ifeq ($(SHOWENV),)
 export DEBUGGER
 else
@@ -38,12 +43,14 @@ endif
 all: $($(PHONE)).run
 %.run: %
 	$(MAKE) stop
-	$(MAKE) -C $< IOS_VERSION=$($(PHONE)_IOS) DO_PAUSE=$(PAUSE)
+	$(DEBUG_PROXY_EXE) &
+	-$(CHROME) $(DEBUGGER)
 	$(MAKE) stop
 iphone6 iphone7: src
 	cp -r src $@
 	mkdir -p $@/WebKit/$(UI)
 	cp -r $(WEBKIT)/$(UI_DIR:/=) $@/WebKit/$(UI)
+	cp -f $@/WebKit/$(BACKEND) $@/WebKit/$(PROTOCOL)/
 stop: proxy.stop
 	httppid=$$(lsof -t -itcp@localhost:8080 -s tcp:listen); \
 	if [ "$$httppid" ]; then \
@@ -119,7 +126,7 @@ env:
 ifeq ($(SHOWENV),)
 	make SHOWENV=1 $@
 else
-	env
+	env | grep -v '^LS_COLORS='
 endif
 $(WEBKIT):
 	cd $(OWNER_SRC) && git clone --depth 1 --filter="blob:none" \
