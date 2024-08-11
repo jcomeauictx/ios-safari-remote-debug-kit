@@ -1,5 +1,12 @@
 SHELL := /bin/bash
 OWNER_SRC := $(dir $(PWD))
+GIT_HTTP_URL := https://github.com/
+GIT_GIT_URL := git@github.com:
+ifeq ($(USER),jcomeau)
+GIT_URL ?= $(GIT_GIT_URL)
+else
+GIT_URL ?= $(GIT_HTTP_URL)
+endif
 OWNER := $(notdir $(OWNER_SRC:/=))
 DEBUG_PROXY_EXE ?= ios_webkit_debug_proxy
 # iphone 6 has 12.5.7, closest options are 12.2 and 13.0
@@ -112,8 +119,8 @@ else
 endif
 $(WEBKIT):
 	cd $(OWNER_SRC) && git clone --depth 1 --filter="blob:none" \
-	 --sparse "git@github.com:$(OWNER)/WebKit"
+	 --sparse "$(GIT_URL)$(OWNER)/WebKit"
 $(WEBKIT_UI): | $(WEBKIT)
-	cd $< && git sparse-checkout set $(dir $(UI_MAIN))
+	cd $| && git sparse-checkout set $(dir $(UI_MAIN))
 webkit: $(WEBKIT_UI)   # just for testing
 .FORCE:
