@@ -33,6 +33,7 @@ VERSION = $($(PHONE)_IOS)
 BACKEND = $(PROTOCOL)/Legacy/iOS/$(VERSION)/InspectorBackendCommands.js
 UI := $(dir $(UI_DIR:/=))
 WEBKIT_UI := $(WEBKIT)/$(UI_MAIN)
+PYTHON ?= $(shell which python3 python false | head -n 1)
 CHROME ?= $(shell which chromium chrome xdg-open false | head -n 1)
 DEBUG_PROXY_EXE ?= $(shell which ios-webkit-debug-proxy false | head -n 1)
 ifeq ($(SHOWENV),)
@@ -44,6 +45,17 @@ all: $($(PHONE)).run
 %.run: %
 	$(MAKE) stop
 	$(DEBUG_PROXY_EXE) &
+	# wait for the webkit proxy to initialize
+	while [ -z "$$(lsof -t -itcp:9222 -s tcp:listen)" ]; do \
+	 echo Awaiting $(DEBUG_PROXY_EXE)... >&2; \
+	 sleep 1; \
+	done
+	cd $*/WebKit/$(UI_DIR) && $(PYTHON) -m http.server 8080 &
+	# wait for the HTTP server to initialize
+	while [ -z "$$(lsof -t -itcp:8080 -s tcp:listen)" ]; do \
+	 echo Awaiting Python HTTP server... >&2; \
+	 sleep 1; \
+	done
 	-$(CHROME) $(DEBUGGER)
 	$(MAKE) stop
 iphone6 iphone7: src
@@ -52,7 +64,7 @@ iphone6 iphone7: src
 	cp -r $(WEBKIT)/$(UI_DIR:/=) $@/WebKit/$(UI)
 	cp -f $@/WebKit/$(BACKEND) $@/WebKit/$(PROTOCOL)/
 stop: proxy.stop
-	httppid=$$(lsof -t -itcp@localhost:8080 -s tcp:listen); \
+	httppid=$$(lsof -t -itcp:8080 -s tcp:listen); \
 	if [ "$$httppid" ]; then \
 	 echo Stopping server on localhost:8080 >&2; \
 	 kill $$httppid; \
@@ -60,7 +72,7 @@ stop: proxy.stop
 	else \
 	 echo Nothing to stop: http server has not been running >&2; \
 	fi
-	wspid=$$(lsof -t -itcp@localhost:9222 -s tcp:listen); \
+	wspid=$$(lsof -t -itcp:9222 -s tcp:listen); \
 	if [ "$$wspid" ]; then \
 	 echo Stopping server on localhost:9222 >&2; \
 	 kill $$wspid; \
