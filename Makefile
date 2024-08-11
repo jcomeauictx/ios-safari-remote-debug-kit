@@ -28,17 +28,17 @@ all: $($(PHONE)).run
 iphone6 iphone7: src
 	cp -r src $@
 stop: proxy.stop
-	httppid=$$(lsof -t -itcp@localhost:8080 -s tcp:listen); \
+	httppid=$$(lsof -t -itcp:8080 -s tcp:listen); \
 	if [ "$$httppid" ]; then \
-	 echo Stopping server on localhost:8080 >&2; \
+	 echo Stopping server on *:8080 >&2; \
 	 kill $$httppid; \
 	 sleep 1; \
 	else \
 	 echo Nothing to stop: http server has not been running >&2; \
 	fi
-	wspid=$$(lsof -t -itcp@localhost:9222 -s tcp:listen); \
+	wspid=$$(lsof -t -itcp:9222 -s tcp:listen); \
 	if [ "$$wspid" ]; then \
-	 echo Stopping server on localhost:9222 >&2; \
+	 echo Stopping server on *:9222 >&2; \
 	 kill $$wspid; \
 	 sleep 1; \
 	else \
@@ -46,7 +46,7 @@ stop: proxy.stop
 	fi
 	iwdppid=$$(lsof -t -itcp:9221 -s tcp:listen); \
 	if [ "$$iwdppid" ]; then \
-	 echo Stopping server on localhost:9221 >&2; \
+	 echo Stopping server on *:9221 >&2; \
 	 kill $$iwdppid; \
 	 sleep 1; \
 	else \
