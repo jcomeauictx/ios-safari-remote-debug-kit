@@ -26,6 +26,8 @@ NEW_SERVER := $(notdir $(NEW_DEBUGGER))
 USR_SRC ?= $(dir $(BESTIES))
 WEBKIT := $(OWNER_SRC:/=)/WebKit
 UI_MAIN := Source/WebInspectorUI/UserInterface/Main.html
+UI_DIR := $(dir $(UI_MAIN))
+UI := $(dir $(UI_DIR:/=))
 WEBKIT_UI := $(WEBKIT)/$(UI_MAIN)
 CHROME ?= $(shell which chromium chrome xdg-open 2>/dev/null | head -n 1)
 ifeq ($(SHOWENV),)
@@ -40,6 +42,8 @@ all: $($(PHONE)).run
 	$(MAKE) stop
 iphone6 iphone7: src
 	cp -r src $@
+	mkdir -p $@/WebKit/$(UI)
+	cp -r $(WEBKIT)/$(UI_DIR:/=) $@/WebKit/$(UI)
 stop: proxy.stop
 	httppid=$$(lsof -t -itcp@localhost:8080 -s tcp:listen); \
 	if [ "$$httppid" ]; then \
