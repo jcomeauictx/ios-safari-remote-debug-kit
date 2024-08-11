@@ -18,6 +18,7 @@ NEW_DEBUGGER_DIR := $(dir $(NEW_DEBUGGER))
 NEW_SERVER := $(notdir $(NEW_DEBUGGER))
 USR_SRC ?= $(dir $(BESTIES))
 WEBKIT := $(OWNER_SRC:/=)/WebKit
+WEBKIT_UI := $(WEBKIT)/Source/WebInspectorUI/UserInterface/Main.html
 CHROME ?= $(shell which chromium chrome xdg-open 2>/dev/null | head -n 1)
 ifeq ($(SHOWENV),)
 export DEBUGGER
@@ -111,5 +112,6 @@ endif
 $(WEBKIT):
 	cd $(OWNER_SRC) && git clone --depth 1 --filter="blob:none" \
 	 --sparse "git@github.com:$(OWNER)/WebKit"
-	cd $@ && git sparse-checkout set Source/WebInspectorUI/UserInterface
+$(WEBKIT_UI): $(WEBKIT)
+	cd $< && git sparse-checkout set Source/WebInspectorUI/UserInterface
 .FORCE:
