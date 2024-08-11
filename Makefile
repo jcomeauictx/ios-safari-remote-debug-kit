@@ -18,7 +18,8 @@ NEW_DEBUGGER_DIR := $(dir $(NEW_DEBUGGER))
 NEW_SERVER := $(notdir $(NEW_DEBUGGER))
 USR_SRC ?= $(dir $(BESTIES))
 WEBKIT := $(OWNER_SRC:/=)/WebKit
-WEBKIT_UI := $(WEBKIT)/Source/WebInspectorUI/UserInterface/Main.html
+UI_MAIN := Source/WebInspectorUI/UserInterface/Main.html
+WEBKIT_UI := $(WEBKIT)/$(UI_MAIN)
 CHROME ?= $(shell which chromium chrome xdg-open 2>/dev/null | head -n 1)
 ifeq ($(SHOWENV),)
 export DEBUGGER
@@ -112,6 +113,7 @@ endif
 $(WEBKIT):
 	cd $(OWNER_SRC) && git clone --depth 1 --filter="blob:none" \
 	 --sparse "git@github.com:$(OWNER)/WebKit"
-$(WEBKIT_UI): $(WEBKIT)
-	cd $< && git sparse-checkout set Source/WebInspectorUI/UserInterface
+$(WEBKIT_UI): | $(WEBKIT)
+	cd $< && git sparse-checkout set $(dir $(UI_MAIN))
+webkit: $(WEBKIT_UI)   # just for testing
 .FORCE:
