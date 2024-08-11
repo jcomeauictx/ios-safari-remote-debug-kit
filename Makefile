@@ -36,6 +36,7 @@ WEBKIT_UI := $(WEBKIT)/$(UI_MAIN)
 PYTHON ?= $(shell which python3 python false | head -n 1)
 CHROME ?= $(shell which chromium chrome xdg-open false | head -n 1)
 DEBUG_PROXY_EXE ?= $(shell which ios-webkit-debug-proxy false | head -n 1)
+STRACE ?= strace -v -f -s256 -o/tmp/isrd.strace.log
 ifeq ($(SHOWENV),)
 export DEBUGGER
 else
@@ -56,8 +57,7 @@ all: $($(PHONE)).run
 	 echo Awaiting Python HTTP server... >&2; \
 	 sleep 1; \
 	done
-	-$(CHROME) $(DEBUGGER)
-	$(MAKE) stop
+	-$(STRACE) $(CHROME) $(DEBUGGER) >/tmp/isrd_chrome.log 2>&1
 iphone6 iphone7: src
 	cp -r src $@
 	mkdir -p $@/WebKit/$(UI)
