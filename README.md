@@ -29,7 +29,10 @@ It provides a free and up-to-date alternative to the discontinued [remotedebug-i
 This will result in the folder `iphone7` being created. It contains the WebInspector files.
 
 The Chrome or Chromium browser will also be launched. It will show you a list
-of clickable pages on your phone's Safari browser for debugging.
+of pages on your phone's Safari browser for debugging. *Do not click* on these
+pages, it will not take you to a usable debugger. Instead, replace the "1" at
+the end of the URL `http://localhost:8080/Main.html?ws=localhost:9222/devtools/page/1` with the desired page number. Alternatively, you can `make PHONEPAGE=http://localhost:4321/myapp.html` to go directly to the debugger page for that app,
+whose URL is shown in your mobile browser.
 
 ### Running
 
@@ -39,8 +42,9 @@ of clickable pages on your phone's Safari browser for debugging.
 5. Open the website you want to debug in Safari
 6. On Linux, run `make`. Make sure your iOS device's screen is unlocked.
 7. The `ios-webkit-debug-proxy` will show your iOS device's name as connected.
-8. The web browser will be launched, pointing to a clickable list of
-   debuggable pages. Click one.
+8. The web browser will be launched, pointing to a list of
+   debuggable pages. Choose one, let's say "2", and then visit
+   `http://localhost:8080/Main.html?ws=localhost:9222/devtools/page/2`.
 9. You should be greeted with the WebInspector and can now debug to your heart's content.
 
 ### Troubleshooting
