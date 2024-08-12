@@ -58,12 +58,13 @@ all: $($(PHONE)).run
 	 sleep 1; \
 	done
 	-$(STRACE) $(CHROME) $(DEBUGGER) >/tmp/isrd_chrome.log 2>&1
-iphone6 iphone7: src
-	cp -r src $@
+iphone6 iphone7: src/fixup.patch src
+	cp -r $(<D) $@
 	mkdir -p $@/WebKit/$(UI)
 	cp -r $(WEBKIT)/$(UI_DIR:/=) $@/WebKit/$(UI)
 	cp -f $@/WebKit/$(BACKEND) $@/WebKit/$(PROTOCOL)/
 	cp src/injectedCode/* $@/WebKit/$(UI_DIR)
+	cd $@ && patch -p0 <$(<F)
 stop: proxy.stop
 	httppid=$$(lsof -t -itcp:8080 -s tcp:listen); \
 	if [ "$$httppid" ]; then \

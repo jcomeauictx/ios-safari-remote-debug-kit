@@ -1,0 +1,26 @@
+diff -uwNr WebKit/Source/WebInspectorUI/UserInterface/Base/Main.js /home/jcomeau/tmp/iphone7.last_known_good/WebKit/Source/WebInspectorUI/UserInterface/Base/Main.js
+--- WebKit/Source/WebInspectorUI/UserInterface/Base/Main.js	2024-08-12 06:24:18.593136994 -0700
++++ /tmp/iphone7.last_known_good/WebKit/Source/WebInspectorUI/UserInterface/Base/Main.js	2024-08-11 15:30:08.396373539 -0700
+@@ -55,8 +55,7 @@
+ 
+ WI.NarrowLayoutMaximumWidth = 700;
+ 
+-WI.loaded = function()
+-{
++WI.loaded = function() { WI._initializeWebSocketIfNeeded();
+     if (InspectorFrontendHost.connect)
+         InspectorFrontendHost.connect();
+ 
+diff -uwNr WebKit/Source/WebInspectorUI/UserInterface/Main.html /home/jcomeau/tmp/iphone7.last_known_good/WebKit/Source/WebInspectorUI/UserInterface/Main.html
+--- WebKit/Source/WebInspectorUI/UserInterface/Main.html	2024-08-12 06:24:19.293145725 -0700
++++ /tmp/iphone7.last_known_good/WebKit/Source/WebInspectorUI/UserInterface/Main.html	2024-08-11 15:30:08.388373439 -0700
+@@ -318,8 +318,7 @@
+     <script src="External/three.js/three.js"></script>
+     <script src="External/three.js/OrbitControls.js"></script>
+ 
+-    <script src="Base/WebInspector.js"></script>
+-    <script src="Base/BrowserInspectorFrontendHost.js"></script>
++    <script src="Base/WebInspector.js"></script><script src="InspectorFrontendHostStub.js"></script><link rel="stylesheet" href="AdditionalStyle.css">    <script src="Base/BrowserInspectorFrontendHost.js"></script>
+     <script src="Base/Platform.js"></script>
+     <script src="Base/Debouncer.js"></script>
+     <script src="Base/DebuggableType.js"></script>
