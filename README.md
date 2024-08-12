@@ -1,4 +1,4 @@
-# Remote Debugging iOS Safari on Windows and Linux
+# Remote Debugging iOS Safari on Linux
 
 Using this project you can debug your websites and web applications running in iOS Safari from a PC running Linux.
 
