@@ -10,8 +10,7 @@ It provides a free and up-to-date alternative to the discontinued [remotedebug-i
 
 - [`ios-webkit-debug-proxy`](https://github.com/google/ios-webkit-debug-proxy)
   - For Linux, please follow the [installation instructions](https://github.com/google/ios-webkit-debug-proxy#linux).
-- [Node.JS http-server](https://www.npmjs.com/package/http-server) **or** [Python](https://www.microsoft.com/store/productId/9P7QFQMJRFP7) **or** [PHP](https://www.php.net/)
-  - Python3, the more up-to-date the better.
+- Python3, the more up-to-date the better.
 - A Chromium based browser like Google Chrome, Edge or Opera **or** WebKit
   based browser like Epiphany/GNOME Web
 
