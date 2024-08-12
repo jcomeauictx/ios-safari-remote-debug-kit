@@ -16,7 +16,7 @@ IPHONE6_IOS ?= 13.0
 # iphone 7 has 15.8.2, closest options are 15.4 and 16.0
 # 15.4 gives "undefined Float16Array error" but not every time (?)
 IPHONE7 := iphone7
-IPHONE7_IOS ?= 16.0
+IPHONE7_IOS ?= 15.4
 DEBUGGER ?= http://localhost:8080/Main.html?ws=localhost:9222/devtools/page/1
 PAUSE ?= false
 BESTIES ?= ../../besties
@@ -63,6 +63,7 @@ iphone6 iphone7: src
 	mkdir -p $@/WebKit/$(UI)
 	cp -r $(WEBKIT)/$(UI_DIR:/=) $@/WebKit/$(UI)
 	cp -f $@/WebKit/$(BACKEND) $@/WebKit/$(PROTOCOL)/
+	cp src/injectedCode/* $@/WebKit/$(UI_DIR)
 stop: proxy.stop
 	httppid=$$(lsof -t -itcp:8080 -s tcp:listen); \
 	if [ "$$httppid" ]; then \
@@ -101,7 +102,6 @@ proxy.stop:
 	else \
 	 echo $(DEBUG_PROXY_EXE) is not running >&2; \
 	fi
-	 
 # more modern golang program referenced in README
 besties: $(NEW_DEBUGGER_DIR)/dist/debug/index.html
 $(NEW_DEBUGGER_DIR)/dist/debug/index.html: $(NEW_DEBUGGER)
