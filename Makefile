@@ -17,7 +17,10 @@ IPHONE6_IOS ?= 13.0
 # 15.4 gives "undefined Float16Array error" but not every time (?)
 IPHONE7 := iphone7
 IPHONE7_IOS ?= 15.4
-DEBUGGER ?= http://localhost:8080/Main.html?ws=localhost:9222/devtools/page/1
+PAGELIST := http://localhost:9222/
+PHONEPAGE ?= http://127.0.0.1:8000/stopgap.html
+PHONEPAGE_REGEX := $(shell echo $(PHONEPAGE) | sed 's%\([./]\)%\\\1%g')
+DEBUGGER ?= http://localhost:8080/Main.html?ws=localhost:9222/devtools/page
 PAUSE ?= false
 BESTIES ?= ../../besties
 NEW_DEBUGGER := $(BESTIES)/ios-safari-remote-debug/ios-safari-remote-debug
@@ -42,7 +45,7 @@ export DEBUGGER
 else
 export
 endif
-all: $($(PHONE)).run
+all: $($(PHONE)).run view
 %.run: %
 	$(MAKE) stop
 	$(DEBUG_PROXY_EXE) &
@@ -57,7 +60,14 @@ all: $($(PHONE)).run
 	 echo Awaiting Python HTTP server... >&2; \
 	 sleep 1; \
 	done
-	-$(STRACE) $(CHROME) $(DEBUGGER) >/tmp/isrd_chrome.log 2>&1
+view:
+	webpage=$(PAGELIST); \
+	page=$$(w3m -dump $(PAGELIST) | \
+	 awk '$$2 ~ /^$(PHONEPAGE_REGEX)$$/ {print $$1}' | tr -d '.'); \
+	if [ "$$page" ]; then \
+	 webpage=$(DEBUGGER)/$$page; \
+	fi; \
+	$(STRACE) $(CHROME) $$webpage >/tmp/isrd_chrome.log 2>&1
 iphone6 iphone7: src/fixup.patch src
 	cp -r $(<D) $@
 	mkdir -p $@/WebKit/$(UI)
